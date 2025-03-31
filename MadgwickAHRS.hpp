@@ -42,7 +42,14 @@ class MadgwickAHRS : public LibXR::Application {
                    LibXR::Thread::Priority::HIGH);
   }
 
-  void OnMonitor() override {}
+  void OnMonitor() override {
+    if (std::isinf(quaternion_.x()) || std::isinf(quaternion_.y()) ||
+        std::isinf(quaternion_.z()) || std::isinf(quaternion_.w()) ||
+        std::isnan(quaternion_.x()) || std::isnan(quaternion_.y()) ||
+        std::isnan(quaternion_.z()) || std::isnan(quaternion_.w())) {
+      LibXR::STDIO::Printf("AHRS: NaN data detected\r\n");
+    };
+  }
 
   static void ThreadFunc(MadgwickAHRS<HardwareContainer> *ahrs) {
     LibXR::Topic::SyncSubscriber<Eigen::Matrix<float, 3, 1>> gyro_suber(
