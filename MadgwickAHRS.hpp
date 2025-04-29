@@ -47,7 +47,7 @@ class MadgwickAHRS : public LibXR::Application {
         std::isinf(quaternion_.z()) || std::isinf(quaternion_.w()) ||
         std::isnan(quaternion_.x()) || std::isnan(quaternion_.y()) ||
         std::isnan(quaternion_.z()) || std::isnan(quaternion_.w())) {
-      LibXR::STDIO::Printf("AHRS: NaN data detected\r\n");
+      XR_LOG_WARN("AHRS: NaN data detected\r\n");
     };
   }
 
