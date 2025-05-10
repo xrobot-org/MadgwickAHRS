@@ -20,10 +20,9 @@ repository: https://github.com/xrobot-org/MadgwickAHRS
 #include "libxr.hpp"
 #include "transform.hpp"
 
-template <typename HardwareContainer>
 class MadgwickAHRS : public LibXR::Application {
  public:
-  MadgwickAHRS(HardwareContainer &hw, LibXR::ApplicationManager &app,
+  MadgwickAHRS(LibXR::HardwareContainer &hw, LibXR::ApplicationManager &app,
                float beta, const char *gyro_topic_name,
                const char *accl_topic_name, const char *quaternion_topic_name,
                const char *euler_topic_name, uint32_t task_stack_depth)
@@ -51,7 +50,7 @@ class MadgwickAHRS : public LibXR::Application {
     };
   }
 
-  static void ThreadFunc(MadgwickAHRS<HardwareContainer> *ahrs) {
+  static void ThreadFunc(MadgwickAHRS *ahrs) {
     LibXR::Topic::SyncSubscriber<Eigen::Matrix<float, 3, 1>> gyro_suber(
         ahrs->gyro_topic_name_, ahrs->gyro_);
     LibXR::Topic::ASyncSubscriber<Eigen::Matrix<float, 3, 1>> accl_suber(
@@ -187,8 +186,7 @@ class MadgwickAHRS : public LibXR::Application {
   }
 
  private:
-  static int CommandFunc(MadgwickAHRS<HardwareContainer> *ahrs, int argc,
-                         char **argv) {
+  static int CommandFunc(MadgwickAHRS *ahrs, int argc, char **argv) {
     if (argc == 1) {
       LibXR::STDIO::Printf("Usage:\r\n");
       LibXR::STDIO::Printf(
@@ -206,9 +204,9 @@ class MadgwickAHRS : public LibXR::Application {
             "Please keep the device steady, start measurement\r\n");
         LibXR::Thread::Sleep(3000);
         LibXR::STDIO::Printf("Please wait\r\n");
-        float start_yaw = ahrs->euler_.yaw_;
+        float start_yaw = ahrs->euler_.Yaw();
         LibXR::Thread::Sleep(10000);
-        float yaw = ahrs->euler_.yaw_;
+        float yaw = ahrs->euler_.Yaw();
 
         LibXR::STDIO::Printf("Zero offset:%f°/min\r\n",
                              (yaw - start_yaw) / M_PI * 180.0f * 3.0f);
@@ -225,7 +223,7 @@ class MadgwickAHRS : public LibXR::Application {
           LibXR::STDIO::Printf(
               "Euler: pitch=%+7.5f, roll=%+7.5f, yaw=%+7.5f Quat: w="
               "%+6.4f, x=%+6.4f, y=%+6.4f, z=%+6.4f, dt=%+7.5f\r\n",
-              ahrs->euler_.pitch_, ahrs->euler_.roll_, ahrs->euler_.yaw_,
+              ahrs->euler_.Pitch(), ahrs->euler_.Roll(), ahrs->euler_.Yaw(),
               ahrs->quaternion_.w(), ahrs->quaternion_.x(),
               ahrs->quaternion_.y(), ahrs->quaternion_.z(), ahrs->dt_);
           LibXR::Thread::Sleep(interval);
