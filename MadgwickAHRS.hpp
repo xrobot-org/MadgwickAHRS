@@ -10,7 +10,7 @@ constructor_args:
   - accl_topic_name: "imu_accl"
   - quaternion_topic_name: "ahrs_quaternion"
   - euler_topic_name: "ahrs_euler"
-  - task_stack_depth: 512
+  - task_stack_depth: 2048
 required_hardware: ramfs
 repository: https://github.com/xrobot-org/MadgwickAHRS
 === END MANIFEST === */
