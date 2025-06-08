@@ -80,7 +80,7 @@ class MadgwickAHRS : public LibXR::Application {
         q1q1, q2q2, q3q3;
     // NOLINTEND
     auto now = LibXR::Timebase::GetMicroseconds();
-    this->dt_ = (now - this->last_time_).to_secondf();
+    this->dt_ = (now - this->last_time_).ToSecondf();
     this->last_time_ = now;
 
     float ax = this->accl_.x();
