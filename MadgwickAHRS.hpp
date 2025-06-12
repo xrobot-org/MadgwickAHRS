@@ -1,8 +1,7 @@
 #pragma once
 
 // clang-format off
-/* === MODULE MANIFEST ===
-module_name: MadgwickAHRS
+/* === MODULE MANIFEST V2 ===
 module_description: 提供姿态和航向参考系统（AHRS）功能的模块 / A module providing Attitude and Heading Reference System (AHRS) functionality
 constructor_args:
   - beta: 0.05
@@ -11,8 +10,9 @@ constructor_args:
   - quaternion_topic_name: "ahrs_quaternion"
   - euler_topic_name: "ahrs_euler"
   - task_stack_depth: 2048
+template_args: []
 required_hardware: ramfs
-repository: https://github.com/xrobot-org/MadgwickAHRS
+depends: []
 === END MANIFEST === */
 // clang-format on
 
