@@ -258,7 +258,7 @@ class MadgwickAHRS : public LibXR::Application {
   LibXR::EulerAngle<float> euler_;
   Eigen::Matrix<float, 3, 1> accl_, gyro_;
 
-  LibXR::TimestampUS last_time_ = 0;
+  LibXR::MicrosecondTimestamp last_time_ = 0;
   float dt_ = 0;
 
   LibXR::Thread thread_;
