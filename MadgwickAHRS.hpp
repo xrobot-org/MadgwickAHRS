@@ -62,6 +62,7 @@ class MadgwickAHRS : public LibXR::Application {
       gyro_suber.Wait();
       if (accl_suber.Available()) {
         ahrs->accl_ = accl_suber.GetData();
+        accl_suber.StartWaiting();
       }
 
       ahrs->Update();
@@ -209,7 +210,7 @@ class MadgwickAHRS : public LibXR::Application {
         float yaw = ahrs->euler_.Yaw();
 
         LibXR::STDIO::Printf("Zero offset:%f°/min\r\n",
-                             (yaw - start_yaw) / M_PI * 180.0f * 3.0f);
+                             (yaw - start_yaw) / M_PI * 180.0f * 6.0f);
       }
     } else if (argc == 4) {
       std::string cmd(argv[1]);
