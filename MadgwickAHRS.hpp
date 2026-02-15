@@ -22,10 +22,10 @@ depends: []
 
 class MadgwickAHRS : public LibXR::Application {
  public:
-  MadgwickAHRS(LibXR::HardwareContainer &hw, LibXR::ApplicationManager &app,
-               float beta, const char *gyro_topic_name,
-               const char *accl_topic_name, const char *quaternion_topic_name,
-               const char *euler_topic_name, uint32_t task_stack_depth)
+  MadgwickAHRS(LibXR::HardwareContainer& hw, LibXR::ApplicationManager& app,
+               float beta, const char* gyro_topic_name,
+               const char* accl_topic_name, const char* quaternion_topic_name,
+               const char* euler_topic_name, uint32_t task_stack_depth)
       : beta_(beta),
         gyro_topic_name_(gyro_topic_name),
         accl_topic_name_(accl_topic_name),
@@ -50,7 +50,7 @@ class MadgwickAHRS : public LibXR::Application {
     };
   }
 
-  static void ThreadFunc(MadgwickAHRS *ahrs) {
+  static void ThreadFunc(MadgwickAHRS* ahrs) {
     LibXR::Topic::SyncSubscriber<Eigen::Matrix<float, 3, 1>> gyro_suber(
         ahrs->gyro_topic_name_, ahrs->gyro_);
     LibXR::Topic::ASyncSubscriber<Eigen::Matrix<float, 3, 1>> accl_suber(
@@ -187,7 +187,7 @@ class MadgwickAHRS : public LibXR::Application {
   }
 
  private:
-  static int CommandFunc(MadgwickAHRS *ahrs, int argc, char **argv) {
+  static int CommandFunc(MadgwickAHRS* ahrs, int argc, char** argv) {
     if (argc == 1) {
       LibXR::STDIO::Printf("Usage:\r\n");
       LibXR::STDIO::Printf(
@@ -249,8 +249,8 @@ class MadgwickAHRS : public LibXR::Application {
   }
 
   float beta_;
-  const char *gyro_topic_name_;
-  const char *accl_topic_name_;
+  const char* gyro_topic_name_;
+  const char* accl_topic_name_;
 
   LibXR::Topic quaternion_topic_;
   LibXR::Topic euler_topic_;
