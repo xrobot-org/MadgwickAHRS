@@ -189,27 +189,23 @@ class MadgwickAHRS : public LibXR::Application {
  private:
   static int CommandFunc(MadgwickAHRS* ahrs, int argc, char** argv) {
     if (argc == 1) {
-      LibXR::STDIO::Printf("Usage:\r\n");
-      LibXR::STDIO::Printf(
-          "  show [time_ms] [interval_ms]            - Show Euler angles and  "
-          "quaternion periodically.\r\n");
-      LibXR::STDIO::Printf(
-          "  print_quat  [time_ms] [interval_ms]     - Show quaternion in "
-          "VOFA+ format periodically.\r\n");
-      LibXR::STDIO::Printf(
-          "  test                                    - Test gyroscope "
-          "calibration.\r\n");
+      LibXR::STDIO::Printf<"Usage:\r\n">();
+      LibXR::STDIO::Printf<"  show [time_ms] [interval_ms]            - Show Euler angles and  "
+          "quaternion periodically.\r\n">();
+      LibXR::STDIO::Printf<"  print_quat  [time_ms] [interval_ms]     - Show quaternion in "
+          "VOFA+ format periodically.\r\n">();
+      LibXR::STDIO::Printf<"  test                                    - Test gyroscope "
+          "calibration.\r\n">();
     } else if (argc == 2) {
       if (strcmp(argv[1], "test") == 0) {
-        LibXR::STDIO::Printf(
-            "Please keep the device steady, start measurement\r\n");
+        LibXR::STDIO::Printf<"Please keep the device steady, start measurement\r\n">();
         LibXR::Thread::Sleep(3000);
-        LibXR::STDIO::Printf("Please wait\r\n");
+        LibXR::STDIO::Printf<"Please wait\r\n">();
         float start_yaw = ahrs->euler_.Yaw();
         LibXR::Thread::Sleep(10000);
         float yaw = ahrs->euler_.Yaw();
 
-        LibXR::STDIO::Printf("Zero offset:%f°/min\r\n",
+        LibXR::STDIO::Printf<"Zero offset:%f°/min\r\n">(
                              (yaw - start_yaw) / M_PI * 180.0f * 6.0f);
       }
     } else if (argc == 4) {
@@ -221,9 +217,8 @@ class MadgwickAHRS : public LibXR::Application {
 
       if (cmd == "show") {
         while (time > 0) {
-          LibXR::STDIO::Printf(
-              "Euler: pitch=%+7.5f, roll=%+7.5f, yaw=%+7.5f Quat: w="
-              "%+6.4f, x=%+6.4f, y=%+6.4f, z=%+6.4f, dt=%+7.5f\r\n",
+          LibXR::STDIO::Printf<"Euler: pitch=%+7.5f, roll=%+7.5f, yaw=%+7.5f Quat: w="
+              "%+6.4f, x=%+6.4f, y=%+6.4f, z=%+6.4f, dt=%+7.5f\r\n">(
               ahrs->euler_.Pitch(), ahrs->euler_.Roll(), ahrs->euler_.Yaw(),
               ahrs->quaternion_.w(), ahrs->quaternion_.x(),
               ahrs->quaternion_.y(), ahrs->quaternion_.z(), ahrs->dt_);
@@ -232,17 +227,17 @@ class MadgwickAHRS : public LibXR::Application {
         }
       } else if (cmd == "print_quat") {
         while (time > 0) {
-          LibXR::STDIO::Printf("%f,%f,%f,%f\n", ahrs->quaternion_.w(),
+          LibXR::STDIO::Printf<"%f,%f,%f,%f\n">(ahrs->quaternion_.w(),
                                ahrs->quaternion_.x(), ahrs->quaternion_.y(),
                                ahrs->quaternion_.z());
           LibXR::Thread::Sleep(interval);
           time -= interval;
         }
       } else {
-        LibXR::STDIO::Printf("Error: Unknown command: %s\r\n", argv[1]);
+        LibXR::STDIO::Printf<"Error: Unknown command: %s\r\n">(argv[1]);
       }
     } else {
-      LibXR::STDIO::Printf("Error: Invalid arguments.\r\n");
+      LibXR::STDIO::Printf<"Error: Invalid arguments.\r\n">();
     }
 
     return 0;
