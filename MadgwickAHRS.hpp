@@ -60,19 +60,21 @@ class MadgwickAHRS : public LibXR::Application {
 
     while (true) {
       gyro_suber.Wait();
+      const auto imu_timestamp = gyro_suber.GetTimestamp();
+
       if (accl_suber.Available()) {
         ahrs->accl_ = accl_suber.GetData();
         accl_suber.StartWaiting();
       }
 
-      ahrs->Update();
+      ahrs->Update(imu_timestamp);
 
-      ahrs->quaternion_topic_.Publish(ahrs->quaternion_);
-      ahrs->euler_topic_.Publish(ahrs->euler_);
+      ahrs->quaternion_topic_.Publish(ahrs->quaternion_, imu_timestamp);
+      ahrs->euler_topic_.Publish(ahrs->euler_, imu_timestamp);
     }
   }
 
-  void Update() {
+  void Update(LibXR::MicrosecondTimestamp imu_timestamp) {
     // NOLINTBEGIN
     float recip_norm;
     float s0, s1, s2, s3;
@@ -80,9 +82,13 @@ class MadgwickAHRS : public LibXR::Application {
     float q_2q0, q_2q1, q_2q2, q_2q3, q_4q0, q_4q1, q_4q2, q_8q1, q_8q2, q0q0,
         q1q1, q2q2, q3q3;
     // NOLINTEND
-    auto now = LibXR::Timebase::GetMicroseconds();
-    this->dt_ = (now - this->last_time_).ToSecondf();
-    this->last_time_ = now;
+    if (this->time_initialized_) {
+      this->dt_ = (imu_timestamp - this->last_time_).ToSecondf();
+    } else {
+      this->dt_ = 0.0f;
+      this->time_initialized_ = true;
+    }
+    this->last_time_ = imu_timestamp;
 
     float ax = this->accl_.x();
     float ay = this->accl_.y();
@@ -255,6 +261,7 @@ class MadgwickAHRS : public LibXR::Application {
   Eigen::Matrix<float, 3, 1> accl_, gyro_;
 
   LibXR::MicrosecondTimestamp last_time_ = 0;
+  bool time_initialized_ = false;
   float dt_ = 0;
 
   LibXR::Thread thread_;
