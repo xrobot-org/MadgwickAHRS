@@ -18,3 +18,7 @@ ramfs
 ## 依赖 / Depends
 
 无（No dependencies）
+
+## 时间戳约定
+
+AHRS 以 gyro topic 作为主时间线。每次姿态更新使用 gyro 消息的 Topic envelope timestamp 计算 `dt`，并用同一个 timestamp 发布 `ahrs_quaternion` 与 `ahrs_euler`。
