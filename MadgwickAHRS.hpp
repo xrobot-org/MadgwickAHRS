@@ -29,8 +29,8 @@ class MadgwickAHRS : public LibXR::Application {
       : beta_(beta),
         gyro_topic_name_(gyro_topic_name),
         accl_topic_name_(accl_topic_name),
-        quaternion_topic_(quaternion_topic_name, sizeof(quaternion_)),
-        euler_topic_(euler_topic_name, sizeof(euler_)),
+        quaternion_topic_(LibXR::Topic::CreateTopic<decltype(quaternion_)>(quaternion_topic_name)),
+        euler_topic_(LibXR::Topic::CreateTopic<decltype(euler_)>(euler_topic_name)),
         cmd_file_(LibXR::RamFS::CreateFile("ahrs", CommandFunc, this)) {
     UNUSED(hw);
     app.Register(*this);
