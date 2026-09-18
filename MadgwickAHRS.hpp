@@ -16,20 +16,30 @@ depends: []
 class MadgwickAHRS
 {
  public:
-  MadgwickAHRS(LibXR::RamFS& external_ramfs, float beta, const char* gyro_topic_name,
-               const char* accl_topic_name, const char* quaternion_topic_name,
-               const char* euler_topic_name, uint32_t task_stack_depth)
-      : beta_(beta),
-        gyro_topic_name_(gyro_topic_name),
-        accl_topic_name_(accl_topic_name),
+  struct Param
+  {
+    float beta;
+    const char* gyro_topic_name;
+    const char* accl_topic_name;
+    const char* quaternion_topic_name;
+    const char* euler_topic_name;
+    uint32_t task_stack_depth;
+  };
+
+  MadgwickAHRS(
+      LibXR::RamFS& ramfs,
+      const Param& param = {.beta = 0.05f, .gyro_topic_name = "imu_gyro", .accl_topic_name = "imu_accl", .quaternion_topic_name = "ahrs_quaternion", .euler_topic_name = "ahrs_euler", .task_stack_depth = 2048})
+      : beta_(param.beta),
+        gyro_topic_name_(param.gyro_topic_name),
+        accl_topic_name_(param.accl_topic_name),
         quaternion_topic_(
-            LibXR::Topic::CreateTopic<decltype(quaternion_)>(quaternion_topic_name)),
-        euler_topic_(LibXR::Topic::CreateTopic<decltype(euler_)>(euler_topic_name)),
+            LibXR::Topic::CreateTopic<decltype(quaternion_)>(param.quaternion_topic_name)),
+        euler_topic_(LibXR::Topic::CreateTopic<decltype(euler_)>(param.euler_topic_name)),
         cmd_file_(LibXR::RamFS::CreateFile("ahrs", CommandFunc, this))
   {
-    external_ramfs.Add(cmd_file_);
+    ramfs.Add(cmd_file_);
 
-    thread_.Create(this, ThreadFunc, "ahrs", task_stack_depth,
+    thread_.Create(this, ThreadFunc, "ahrs", param.task_stack_depth,
                    LibXR::Thread::Priority::HIGH);
   }
 
