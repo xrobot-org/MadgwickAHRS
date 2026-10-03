@@ -12,19 +12,38 @@ depends: []
 #include "thread.hpp"
 #include "transform.hpp"
 
+/**
+ * @brief 基于 Madgwick 梯度下降算法的姿态解算模块，发布四元数和欧拉角。
+ *        Attitude estimation module based on the Madgwick gradient-descent filter;
+ *        publishes the quaternion and Euler angles.
+ */
 class MadgwickAHRS
 {
  public:
+  /**
+   * @brief 构造参数。
+   *        Construction parameters.
+   */
   struct Param
   {
-    float beta;
-    const char* gyro_topic_name;
-    const char* accl_topic_name;
-    const char* quaternion_topic_name;
-    const char* euler_topic_name;
-    uint32_t task_stack_depth;
+    float beta;                         ///< 滤波增益 Filter gain
+    const char* gyro_topic_name;        ///< 陀螺仪 Topic 名称 Gyroscope Topic name
+    const char* accl_topic_name;        ///< 加速度计 Topic 名称 Accelerometer Topic name
+    const char* quaternion_topic_name;  ///< 四元数 Topic 名称 Quaternion Topic name
+    const char* euler_topic_name;       ///< 欧拉角 Topic 名称 Euler angle Topic name
+    uint32_t task_stack_depth;          ///< 线程栈深 Thread stack depth
   };
 
+  /**
+   * @brief 构造 MadgwickAHRS，创建发布 Topic，注册 `ahrs` 命令并创建 `ahrs` 线程。
+   *        Construct MadgwickAHRS, create the published Topics, register the `ahrs`
+   *        command and create the `ahrs` thread.
+   *
+   * @param ramfs 接收 `ahrs` 命令的 RamFS。
+   *              RamFS that receives the `ahrs` command.
+   * @param param 构造参数。
+   *              Construction parameters.
+   */
   MadgwickAHRS(
       LibXR::RamFS& ramfs,
       const Param& param = {.beta = 0.05f, .gyro_topic_name = "imu_gyro", .accl_topic_name = "imu_accl", .quaternion_topic_name = "ahrs_quaternion", .euler_topic_name = "ahrs_euler", .task_stack_depth = 2048})
@@ -42,6 +61,10 @@ class MadgwickAHRS
                    LibXR::Thread::Priority::HIGH);
   }
 
+  /**
+   * @brief 监控回调：四元数含有 NaN 或 Inf 时输出告警。
+   *        Monitor callback: log a warning when the quaternion contains NaN or Inf.
+   */
   void OnMonitor()
   {
     if (std::isinf(quaternion_.x()) || std::isinf(quaternion_.y()) ||
@@ -53,6 +76,14 @@ class MadgwickAHRS
     };
   }
 
+  /**
+   * @brief 线程函数：每收到一条陀螺仪消息更新一次姿态并发布结果。
+   *        Thread function: update the attitude on every gyroscope message and publish
+   *        the result.
+   *
+   * @param ahrs MadgwickAHRS 实例。
+   *             MadgwickAHRS instance.
+   */
   static void ThreadFunc(MadgwickAHRS* ahrs)
   {
     LibXR::Topic::SyncSubscriber<Eigen::Matrix<float, 3, 1>> gyro_suber(
@@ -80,6 +111,15 @@ class MadgwickAHRS
     }
   }
 
+  /**
+   * @brief 使用最近的陀螺仪与加速度计数据更新四元数和欧拉角。
+   *        Update the quaternion and Euler angles from the latest gyroscope and
+   *        accelerometer data.
+   *
+   * @param imu_timestamp 陀螺仪消息的时间戳，相邻两次之差为 dt，第一次 dt 为 0。
+   *                      Timestamp of the gyroscope message; the difference between
+   *                      consecutive calls is dt, which is 0 on the first call.
+   */
   void Update(LibXR::MicrosecondTimestamp imu_timestamp)
   {
     // NOLINTBEGIN
@@ -186,6 +226,15 @@ class MadgwickAHRS
     this->euler_ = this->quaternion_.ToEulerAngle();
   }
 
+  /**
+   * @brief 计算平方根的倒数。
+   *        Compute the reciprocal of the square root.
+   *
+   * @param x 输入值。
+   *          Input value.
+   * @return 1 / sqrt(x)。
+   *         1 / sqrt(x).
+   */
   float InvSqrtf(float x)
   {
     return 1.0f / sqrtf(x);
