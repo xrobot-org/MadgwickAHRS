@@ -2,8 +2,7 @@
 
 // clang-format off
 /* === MODULE MANIFEST V2 ===
-module_description: 提供姿态和航向参考系统（AHRS）功能的模块 / A module providing Attitude and Heading
-  Reference System (AHRS) functionality
+module_description: 基于 Madgwick 梯度下降算法的姿态和航向参考系统（AHRS）模块 / Attitude and Heading Reference System (AHRS) module based on the Madgwick gradient-descent filter
 depends: []
 === END MANIFEST === */
 // clang-format on
@@ -144,7 +143,7 @@ class MadgwickAHRS
       q2q2 = this->quaternion_.y() * this->quaternion_.y();
       q3q3 = this->quaternion_.z() * this->quaternion_.z();
 
-      /* Gradient decent algorithm corrective step */
+      /* Gradient descent algorithm corrective step */
       s0 = q_4q0 * q2q2 + q_2q2 * ax + q_4q0 * q1q1 - q_2q1 * ay;
       s1 = q_4q1 * q3q3 - q_2q3 * ax + 4.0f * q0q0 * this->quaternion_.x() - q_2q0 * ay -
            q_4q1 + q_8q1 * q1q1 + q_8q1 * q2q2 + q_4q1 * az;
@@ -189,20 +188,7 @@ class MadgwickAHRS
 
   float InvSqrtf(float x)
   {
-#if 0
-  /* Fast inverse square-root */
-  /* See: http://en.wikipedia.org/wiki/Fast_inverse_square_root */
-	float halfx = 0.5f * x;
-	float y = x;
-	long i = *(long*)&y;
-	i = 0x5f3759df - (i>>1);
-	y = *(float*)&i;
-	y = y * (1.5f - (halfx * y * y));
-	y = y * (1.5f - (halfx * y * y));
-	return y;
-#else
     return 1.0f / sqrtf(x);
-#endif
   }
 
  private:
