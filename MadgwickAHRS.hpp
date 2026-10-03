@@ -44,14 +44,18 @@ class MadgwickAHRS
    * @param param 构造参数。
    *              Construction parameters.
    */
-  MadgwickAHRS(
-      LibXR::RamFS& ramfs,
-      const Param& param = {.beta = 0.05f, .gyro_topic_name = "imu_gyro", .accl_topic_name = "imu_accl", .quaternion_topic_name = "ahrs_quaternion", .euler_topic_name = "ahrs_euler", .task_stack_depth = 2048})
+  MadgwickAHRS(LibXR::RamFS& ramfs,
+               const Param& param = {.beta = 0.05f,
+                                     .gyro_topic_name = "imu_gyro",
+                                     .accl_topic_name = "imu_accl",
+                                     .quaternion_topic_name = "ahrs_quaternion",
+                                     .euler_topic_name = "ahrs_euler",
+                                     .task_stack_depth = 2048})
       : beta_(param.beta),
         gyro_topic_name_(param.gyro_topic_name),
         accl_topic_name_(param.accl_topic_name),
-        quaternion_topic_(
-            LibXR::Topic::CreateTopic<decltype(quaternion_)>(param.quaternion_topic_name)),
+        quaternion_topic_(LibXR::Topic::CreateTopic<decltype(quaternion_)>(
+            param.quaternion_topic_name)),
         euler_topic_(LibXR::Topic::CreateTopic<decltype(euler_)>(param.euler_topic_name)),
         cmd_file_(LibXR::RamFS::CreateFile("ahrs", CommandFunc, this))
   {
