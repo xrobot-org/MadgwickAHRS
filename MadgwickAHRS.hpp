@@ -2,7 +2,7 @@
 
 // clang-format off
 /* === MODULE MANIFEST V2 ===
-module_description: 基于 Madgwick 梯度下降算法的姿态和航向参考系统（AHRS）模块 / Attitude and Heading Reference System (AHRS) module based on the Madgwick gradient-descent filter
+module_description: 基于 Madgwick 梯度下降算法的姿态和航向参考系统（AHRS）模块 / Attitude and Heading Reference System (AHRS) Module based on the Madgwick gradient-descent filter
 depends: []
 === END MANIFEST === */
 // clang-format on
